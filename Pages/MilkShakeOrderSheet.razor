@@ -1,0 +1,85 @@
+﻿@page "/milkshakeordersheet"
+@inject ISampleDataService dataService
+
+<h3>MilkShakeOrderSheet</h3>
+
+@if (showOrderForm)
+{
+    <EditForm Model="@order" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <p>
+            <label>
+                Type of Milkshake:
+                <InputSelect @bind-Value="order.TypeOfMilkShake">
+                    <option value="">Select a MilkShake Type</option>
+                    @foreach (var t in milkshakeTypes)
+                    {
+                        <option value="@t">@t</option>
+                    }
+                </InputSelect>
+            </label>
+        </p>
+        <p>
+            <label>
+                Size of Milkshake:
+                <InputSelect @bind-Value="order.SizeOfMilkShake">
+                    <option value="">Select a MilkShake Size</option>
+                    @foreach (var s in milkshakeSizes)
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </InputSelect>
+            </label>
+        </p>
+        <p>
+            <label>
+                Name for Order:
+                <InputText @bind-Value="order.OrderName" />
+
+            </label>
+        </p>
+        <p>
+            <label>
+                Quantity of Order:
+                <InputNumber @bind-Value="order.Quantity" />
+
+            </label>
+        </p>
+        <p>
+            <label>
+                Add Whipped Cream:
+                <InputCheckbox @bind-Value="order.AddWhippedCream" />
+
+            </label>
+        </p>
+        <button class="btn btn-outline-primary" type="submit">Submit Order</button>
+    </EditForm>
+}
+
+@if (orderResult != null)
+{
+    <h4>@orderResult</h4>
+}
+
+@code {
+    private MilkShakeOrderModel order = new MilkShakeOrderModel();
+    private List<string> milkshakeTypes;
+    private List<string> milkshakeSizes;
+    bool showOrderForm = true;
+    private string orderResult;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        milkshakeTypes = dataService.GetMilfShakeType();
+        milkshakeSizes = dataService.GetMilkShakeSizes();
+    }
+
+    private void HandleValidSubmit()
+    {
+        showOrderForm = false;
+        orderResult = $"Your order for {order.Quantity} {order.SizeOfMilkShake} { order.TypeOfMilkShake } milkshakes has been placed.";
+    }
+}
